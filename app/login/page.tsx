@@ -1,159 +1,194 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { signIn } from '@/lib/supabase';
 
 export default function LoginPage() {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        rememberMe: false
-    });
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Handle login logic here
-        console.log('Login submitted:', formData);
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
-    };
+    try {
+      const { data, error: signInError } = await signIn(formData.email, formData.password);
 
-    return (
-        <>
-            {/* Login Section Start */}
-            <div className="login-section">
-                {/* Background Shapes */}
-                <div className="login-shape">
-                    <div className="shape shape-1">
-                        <img src="/assets/images/slider/slidertwo-shape/shape-1.png" alt="Shape" />
-                    </div>
-                    <div className="shape shape-2">
-                        <img src="/assets/images/slider/slidertwo-shape/shape-3.png" alt="Shape" />
-                    </div>
-                    <div className="shape shape-3">
-                        <img src="/assets/images/slider/slidertwo-shape/shape-4.png" alt="Shape" />
-                    </div>
-                    <div className="shape shape-4">
-                        <img src="/assets/images/slider/slidertwo-shape/shape-6.png" alt="Shape" />
-                    </div>
-                    <div className="shape shape-5">
-                        <img src="/assets/images/slider/slidertwo-shape/shape-9.png" alt="Shape" />
-                    </div>
+      if (signInError) {
+        setError(signInError.message);
+        setLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        // Redirect to home page on successful login
+        router.push('/');
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during login');
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  return (
+    <>
+      {/* Login Section Start */}
+      <div className="login-section">
+        {/* Background Shapes */}
+        <div className="login-shape">
+          <div className="shape shape-1">
+            <img src="/assets/images/slider/slidertwo-shape/shape-1.png" alt="Shape" />
+          </div>
+          <div className="shape shape-2">
+            <img src="/assets/images/slider/slidertwo-shape/shape-3.png" alt="Shape" />
+          </div>
+          <div className="shape shape-3">
+            <img src="/assets/images/slider/slidertwo-shape/shape-4.png" alt="Shape" />
+          </div>
+          <div className="shape shape-4">
+            <img src="/assets/images/slider/slidertwo-shape/shape-6.png" alt="Shape" />
+          </div>
+          <div className="shape shape-5">
+            <img src="/assets/images/slider/slidertwo-shape/shape-9.png" alt="Shape" />
+          </div>
+        </div>
+
+        <div className="container">
+          <div className="row justify-content-center align-items-center min-vh-100">
+            <div className="col-lg-5 col-md-7 col-sm-9">
+              {/* Login Card */}
+              <div className="login-card">
+                {/* Logo */}
+                <div className="login-logo text-center mb-4">
+                  <a href="/">
+                    <img src="/assets/images/logo-2.png" alt="TiCON Global" />
+                  </a>
                 </div>
 
-                <div className="container">
-                    <div className="row justify-content-center align-items-center min-vh-100">
-                        <div className="col-lg-5 col-md-7 col-sm-9">
-                            {/* Login Card */}
-                            <div className="login-card">
-                                {/* Logo */}
-                                <div className="login-logo text-center mb-4">
-                                    <a href="/">
-                                        <img src="/assets/images/logo-2.png" alt="TiCON Global" />
-                                    </a>
-                                </div>
-
-                                {/* Heading */}
-                                <div className="heading-one text-center mb-5">
-                                    <span className="heading-one-subtitle gradient-text-1">Welcome Back</span>
-                                    <h2 className="heading-one-title" style={{ fontSize: '42px' }}>Sign In</h2>
-                                    <p>Access your TiCON account</p>
-                                </div>
-
-                                {/* Login Form */}
-                                <form onSubmit={handleSubmit} className="login-form">
-                                    {/* Email Input */}
-                                    <div className="form-group mb-4">
-                                        <label htmlFor="email" className="form-label">Email Address</label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-                                            className="form-control login-input"
-                                            placeholder="Enter your email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </div>
-
-                                    {/* Password Input */}
-                                    <div className="form-group mb-4">
-                                        <label htmlFor="password" className="form-label">Password</label>
-                                        <input
-                                            type="password"
-                                            id="password"
-                                            name="password"
-                                            className="form-control login-input"
-                                            placeholder="Enter your password"
-                                            value={formData.password}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </div>
-
-                                    {/* Remember Me & Forgot Password */}
-                                    <div className="form-options mb-4 d-flex justify-content-between align-items-center">
-                                        <div className="form-check">
-                                            <input
-                                                type="checkbox"
-                                                id="rememberMe"
-                                                name="rememberMe"
-                                                className="form-check-input"
-                                                checked={formData.rememberMe}
-                                                onChange={handleChange}
-                                            />
-                                            <label htmlFor="rememberMe" className="form-check-label">
-                                                Remember Me
-                                            </label>
-                                        </div>
-                                        <a href="/forgot-password" className="forgot-link">
-                                            Forgot Password?
-                                        </a>
-                                    </div>
-
-                                    {/* Submit Button */}
-                                    <button type="submit" className="btn-style-one w-100 mb-4">
-                                        <span>Sign In</span>
-                                    </button>
-
-                                    {/* Divider */}
-                                    <div className="login-divider mb-4">
-                                        <span>Or continue with</span>
-                                    </div>
-
-                                    {/* Social Login Buttons */}
-                                    <div className="social-login mb-4">
-                                        <button type="button" className="social-btn google-btn">
-                                            <i className="fab fa-google"></i>
-                                            <span>Google</span>
-                                        </button>
-                                        <button type="button" className="social-btn linkedin-btn">
-                                            <i className="fab fa-linkedin-in"></i>
-                                            <span>LinkedIn</span>
-                                        </button>
-                                    </div>
-
-                                    {/* Sign Up Link */}
-                                    <div className="signup-link text-center">
-                                        <p>
-                                            Don't have an account? <a href="/signup" className="signup-link-text">Sign Up</a>
-                                        </p>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                {/* Heading */}
+                <div className="heading-one text-center mb-5">
+                  <span className="heading-one-subtitle gradient-text-1">Welcome Back</span>
+                  <h2 className="heading-one-title" style={{ fontSize: '42px' }}>Sign In</h2>
+                  <p>Access your TiCON account</p>
                 </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="alert alert-error">
+                    <i className="fas fa-exclamation-circle"></i>
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {/* Login Form */}
+                <form onSubmit={handleSubmit} className="login-form">
+                  {/* Email Input */}
+                  <div className="form-group mb-4">
+                    <label htmlFor="email" className="form-label">Email Address</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      className="form-control login-input"
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  {/* Password Input */}
+                  <div className="form-group mb-4">
+                    <label htmlFor="password" className="form-label">Password</label>
+                    <input
+                      type="password"
+                      id="password"
+                      name="password"
+                      className="form-control login-input"
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  {/* Remember Me & Forgot Password */}
+                  <div className="form-options mb-4 d-flex justify-content-between align-items-center">
+                    <div className="form-check">
+                      <input
+                        type="checkbox"
+                        id="rememberMe"
+                        name="rememberMe"
+                        className="form-check-input"
+                        checked={formData.rememberMe}
+                        onChange={handleChange}
+                      />
+                      <label htmlFor="rememberMe" className="form-check-label">
+                        Remember Me
+                      </label>
+                    </div>
+                    <a href="/forgot-password" className="forgot-link">
+                      Forgot Password?
+                    </a>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    className="btn-style-one w-100 mb-4"
+                    disabled={loading}
+                  >
+                    <span>{loading ? 'Signing In...' : 'Sign In'}</span>
+                  </button>
+
+                  {/* Divider */}
+                  <div className="login-divider mb-4">
+                    <span>Or continue with</span>
+                  </div>
+
+                  {/* Social Login Buttons */}
+                  <div className="social-login mb-4">
+                    <button type="button" className="social-btn google-btn">
+                      <i className="fab fa-google"></i>
+                      <span>Google</span>
+                    </button>
+                    <button type="button" className="social-btn linkedin-btn">
+                      <i className="fab fa-linkedin-in"></i>
+                      <span>LinkedIn</span>
+                    </button>
+                  </div>
+
+                  {/* Sign Up Link */}
+                  <div className="signup-link text-center">
+                    <p>
+                      Don't have an account? <a href="/signup" className="signup-link-text">Sign Up</a>
+                    </p>
+                  </div>
+                </form>
+              </div>
             </div>
-            {/* Login Section End */}
+          </div>
+        </div>
+      </div>
+      {/* Login Section End */}
 
-            <style jsx>{`
+      <style jsx>{`
         .login-section {
           position: relative;
           min-height: 100vh;
@@ -279,6 +314,44 @@ export default function LoginPage() {
 
         .login-input::placeholder {
           color: #9ca3af;
+        }
+
+        .alert {
+          padding: 15px 20px;
+          border-radius: 10px;
+          margin-bottom: 20px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 14px;
+          font-weight: 500;
+          animation: slideDown 0.3s ease;
+        }
+
+        .alert-error {
+          background: #fef2f2;
+          color: #ef4444;
+          border: 2px solid #fecaca;
+        }
+
+        .alert i {
+          font-size: 18px;
+        }
+
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .btn-style-one:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
         }
 
         .form-options {
@@ -423,6 +496,6 @@ export default function LoginPage() {
           }
         }
       `}</style>
-        </>
-    );
+    </>
+  );
 }
