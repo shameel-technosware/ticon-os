@@ -1,1 +1,0 @@
-{"mcpServers":{"supabase":{"command":"npx","args":["-y","@supabase/mcp-server-supabase@0.5.5","--access-token","sbp_75a9f72ef6229dd513381730f35314f8e870e634"],"alwaysAllow":["list_projects","list_tables"]}}}
