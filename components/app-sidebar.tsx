@@ -2,20 +2,19 @@
 
 import * as React from "react"
 import {
-  IconCamera,
-  IconChartBar,
   IconDashboard,
   IconDatabase,
-  IconFileAi,
-  IconFileDescription,
   IconFileWord,
   IconFolder,
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
+  IconMail,
   IconReport,
+  IconRobot,
   IconSearch,
   IconSettings,
+  IconShare,
   IconUsers,
 } from "@tabler/icons-react"
 
@@ -44,16 +43,17 @@ const data = {
       title: "Dashboard",
       url: "#",
       icon: IconDashboard,
+      isActive: true,
     },
     {
-      title: "Lifecycle",
+      title: "Contacts",
       url: "#",
-      icon: IconListDetails,
+      icon: IconUsers,
     },
     {
-      title: "Analytics",
+      title: "Referrals",
       url: "#",
-      icon: IconChartBar,
+      icon: IconShare,
     },
     {
       title: "Projects",
@@ -61,57 +61,24 @@ const data = {
       icon: IconFolder,
     },
     {
-      title: "Team",
+      title: "Activities",
+      url: "#",
+      icon: IconListDetails,
+    },
+    {
+      title: "Accounts",
       url: "#",
       icon: IconUsers,
     },
-  ],
-  navClouds: [
     {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
+      title: "Mailbox",
       url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      icon: IconMail,
     },
     {
-      title: "Proposal",
-      icon: IconFileDescription,
+      title: "Ticon AI ChatBot",
       url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      icon: IconRobot,
     },
   ],
   navSecondary: [
