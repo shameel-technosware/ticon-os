@@ -10,7 +10,14 @@ import {
 
 import data from "./data.json"
 
-export default function Page() {
+import { createClient } from "@/utils/supabase/server"
+
+// ... (existing imports)
+
+export default async function Page() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   return (
     <SidebarProvider
       style={
@@ -20,8 +27,9 @@ export default function Page() {
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar variant="inset" user={user} />
       <SidebarInset>
+
         <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
