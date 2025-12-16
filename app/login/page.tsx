@@ -1,6 +1,7 @@
-import { GalleryVerticalEnd } from "lucide-react"
+import { GalleryVerticalEnd } from "lucide-react";
+import { Suspense } from "react";
 
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/components/login-form";
 
 export default function LoginPage() {
   return (
@@ -12,8 +13,10 @@ export default function LoginPage() {
           </div>
           Ticon OS
         </a>
-        <LoginForm />
+        <Suspense fallback={<div>Loading...</div>}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
-  )
+  );
 }
