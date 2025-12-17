@@ -33,6 +33,11 @@ interface ContactTableProps {
   loading: boolean;
   onEdit: (contact: Contact) => void;
   onDelete: (id: number) => void;
+  onSort?: (key: "created_at" | "name" | "contact_number") => void;
+  sortConfig?: {
+    key: "created_at" | "name" | "contact_number";
+    direction: "asc" | "desc";
+  } | null;
 }
 
 export default function ContactTable({
@@ -40,6 +45,8 @@ export default function ContactTable({
   loading,
   onEdit,
   onDelete,
+  onSort,
+  sortConfig,
 }: ContactTableProps) {
   return (
     <Card className="relative overflow-hidden">
@@ -65,11 +72,41 @@ export default function ContactTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Phone Number</TableHead>
+                <TableHead
+                  className="cursor-pointer hover:bg-accent"
+                  onClick={() => onSort && onSort("name")}
+                >
+                  Name
+                  {sortConfig?.key === "name" && (
+                    <span className="ml-1">
+                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer hover:bg-accent"
+                  onClick={() => onSort && onSort("contact_number")}
+                >
+                  Phone Number
+                  {sortConfig?.key === "contact_number" && (
+                    <span className="ml-1">
+                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
+                </TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Notes</TableHead>
-                <TableHead>Date Added</TableHead>
+                <TableHead
+                  className="cursor-pointer hover:bg-accent"
+                  onClick={() => onSort && onSort("created_at")}
+                >
+                  Date Added
+                  {sortConfig?.key === "created_at" && (
+                    <span className="ml-1">
+                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
+                </TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>

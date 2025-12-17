@@ -26,6 +26,10 @@ export default function ContactsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState<{
+    key: "created_at" | "name" | "contact_number";
+    direction: "asc" | "desc";
+  } | null>(null);
 
   const supabase = createClient();
 
@@ -50,27 +54,62 @@ export default function ContactsPage() {
     }
   };
 
-  // Filter contacts based on search term
-  useEffect(() => {
-    if (contacts.length > 0) {
-      if (searchTerm.trim() === "") {
-        setFilteredContacts(contacts);
-      } else {
-        const filtered = contacts.filter(
-          (contact) =>
-            contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            contact.contact_number
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase()) ||
-            (contact.email &&
-              contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            (contact.notes &&
-              contact.notes.toLowerCase().includes(searchTerm.toLowerCase()))
-        );
-        setFilteredContacts(filtered);
+  // Function to sort contacts
+  const sortContacts = (contactsToSort: Contact[]) => {
+    if (!sortConfig) return contactsToSort;
+
+    const sortedContacts = [...contactsToSort];
+    sortedContacts.sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === "asc" ? -1 : 1;
       }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === "asc" ? 1 : -1;
+      }
+      return 0;
+    });
+    return sortedContacts;
+  };
+
+  // Filter and sort contacts based on search term and sort config
+  useEffect(() => {
+    let result = [...contacts];
+
+    // Apply search filter
+    if (searchTerm.trim() !== "") {
+      result = result.filter(
+        (contact) =>
+          contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          contact.contact_number
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          (contact.email &&
+            contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (contact.notes &&
+            contact.notes.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
     }
-  }, [searchTerm, contacts]);
+
+    // Apply sorting
+    if (sortConfig) {
+      result = sortContacts(result);
+    }
+
+    setFilteredContacts(result);
+  }, [searchTerm, sortConfig, contacts]);
+
+  // Handle sorting
+  const handleSort = (key: "created_at" | "name" | "contact_number") => {
+    let direction: "asc" | "desc" = "asc";
+    if (
+      sortConfig &&
+      sortConfig.key === key &&
+      sortConfig.direction === "asc"
+    ) {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
 
   useEffect(() => {
     fetchContacts();
@@ -151,6 +190,8 @@ export default function ContactsPage() {
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onSort={handleSort}
+        sortConfig={sortConfig}
       />
 
       <ContactFormDialog
