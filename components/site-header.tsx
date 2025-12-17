@@ -1,7 +1,8 @@
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { DynamicBreadcrumb } from "@/components/dynamic-breadcrumb"
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { DynamicBreadcrumb } from "@/components/dynamic-breadcrumb";
+import { Suspense } from "react";
 
 export function SiteHeader() {
   return (
@@ -12,7 +13,9 @@ export function SiteHeader() {
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
-        <DynamicBreadcrumb />
+        <Suspense fallback={<div></div>}>
+          <DynamicBreadcrumb />
+        </Suspense>
         <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
             <a
@@ -27,5 +30,5 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }
