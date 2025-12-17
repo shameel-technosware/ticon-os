@@ -28,7 +28,7 @@ interface Project {
       name: string;
       contact_number: string;
       email: string;
-    }[];
+    };
   }>;
 }
 
@@ -63,12 +63,12 @@ export default function ProjectsPage() {
         .from("projects")
         .select(
           `
-          id, 
-          title, 
-          description, 
-          status, 
-          created_by, 
-          created_at, 
+          id,
+          title,
+          description,
+          status,
+          created_by,
+          created_at,
           updated_at,
           project_contacts (
             id,
@@ -89,8 +89,10 @@ export default function ProjectsPage() {
 
       if (error) throw error;
 
-      setProjects(data || []);
-      setFilteredProjects(data || []); // Initialize filtered projects
+      // Cast data to Project[] type to satisfy TypeScript
+      const typedData = data as unknown as Project[];
+      setProjects(typedData || []);
+      setFilteredProjects(typedData || []); // Initialize filtered projects
     } catch (error: any) {
       console.error("Error fetching projects:", error);
       toast.error("Failed to fetch projects");

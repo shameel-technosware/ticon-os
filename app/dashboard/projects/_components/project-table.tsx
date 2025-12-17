@@ -36,7 +36,7 @@ interface Project {
       name: string;
       contact_number: string;
       email: string;
-    }[];
+    };
   }>;
 }
 
@@ -62,28 +62,53 @@ export default function ProjectTable({
 }: ProjectTableProps) {
   // Helper function to get primary contact name
   const getPrimaryContact = (project: Project) => {
+    console.log("Project data for debugging:", project); // Debug log
+
     if (!project.project_contacts || project.project_contacts.length === 0) {
+      console.log("No project contacts found"); // Debug log
       return "No contacts";
     }
 
-    // Find contact with priority_order = 1 (primary contact)
-    const primaryContact = project.project_contacts.find(
+    console.log("All project contacts:", project.project_contacts); // Debug log
+
+    // First, try to find a contact with relationship_type = 'primary'
+    const primaryTypeContact = project.project_contacts.find(
+      (pc) => pc.relationship_type === "primary"
+    );
+    console.log("Primary type contact found:", primaryTypeContact); // Debug log
+
+    if (primaryTypeContact && primaryTypeContact.contacts) {
+      console.log(
+        "Returning primary type contact:",
+        primaryTypeContact.contacts.name
+      ); // Debug log
+      return primaryTypeContact.contacts.name;
+    }
+
+    // If no primary type contact, find contact with priority_order = 1
+    const priorityOneContact = project.project_contacts.find(
       (pc) => pc.priority_order === 1
     );
-    if (primaryContact && primaryContact.contacts.length > 0) {
-      return primaryContact.contacts[0].name;
+    console.log("Priority 1 contact found:", priorityOneContact); // Debug log
+
+    if (priorityOneContact && priorityOneContact.contacts) {
+      console.log(
+        "Returning priority 1 contact:",
+        priorityOneContact.contacts.name
+      ); // Debug log
+      return priorityOneContact.contacts.name;
     }
 
-    // If no primary contact, return the first contact
+    // If no primary type or priority 1, return the first contact in the list
     const firstContact = project.project_contacts[0];
-    if (
-      firstContact &&
-      firstContact.contacts &&
-      firstContact.contacts.length > 0
-    ) {
-      return firstContact.contacts[0].name;
+    console.log("First contact found:", firstContact); // Debug log
+
+    if (firstContact && firstContact.contacts) {
+      console.log("Returning first contact:", firstContact.contacts.name); // Debug log
+      return firstContact.contacts.name;
     }
 
+    console.log("No contacts found to return"); // Debug log
     return "No contacts";
   };
 

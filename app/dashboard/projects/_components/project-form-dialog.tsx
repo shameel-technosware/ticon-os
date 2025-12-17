@@ -47,7 +47,7 @@ interface Project {
       name: string;
       contact_number: string;
       email: string;
-    }[];
+    };
   }>;
 }
 
@@ -349,6 +349,13 @@ export default function ProjectFormDialog({
     const contact = availableContacts.find((c) => c.id === contactId);
     return contact ? contact.name : "Unknown Contact";
   };
+
+  // Log selected contacts for debugging
+  useEffect(() => {
+    if (selectedContacts.length > 0) {
+      console.log("Selected contacts updated:", selectedContacts);
+    }
+  }, [selectedContacts]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
