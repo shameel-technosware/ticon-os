@@ -26,6 +26,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Icons } from "@/components/icons";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 
 interface Project {
@@ -221,11 +222,13 @@ export default function ProjectTable({
                               <Icons.eye className="h-4 w-4" />
                             </Button>
                           </DialogTrigger>
-                          <DialogContent>
+                          <DialogContent className="sm:max-w-md">
                             <DialogHeader>
-                              <DialogTitle>Contact Details</DialogTitle>
+                              <DialogTitle className="text-xl font-bold">
+                                Contact Details
+                              </DialogTitle>
                             </DialogHeader>
-                            <div className="grid gap-4 py-4">
+                            <div className="py-4 space-y-4">
                               {(() => {
                                 // Find the primary contact using the same logic as getPrimaryContact
                                 let primaryContact = null;
@@ -271,30 +274,55 @@ export default function ProjectTable({
                                 }
 
                                 return primaryContact ? (
-                                  <>
-                                    <div className="flex justify-between">
-                                      <span className="font-medium">Name:</span>
-                                      <span>{primaryContact.name}</span>
+                                  <div className="space-y-4">
+                                    {/* Contact Header with Avatar */}
+                                    <div className="flex items-center space-x-4">
+                                      <Avatar className="h-16 w-16">
+                                        <AvatarImage
+                                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                            primaryContact.name
+                                          )}&background=0ea5e9&color=fff`}
+                                          alt={primaryContact.name}
+                                        />
+                                        <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                                          {primaryContact.name.charAt(0)}
+                                        </AvatarFallback>
+                                      </Avatar>
+                                      <div>
+                                        <h3 className="text-lg font-bold text-foreground">
+                                          {primaryContact.name}
+                                        </h3>
+                                        <span className="text-sm text-muted-foreground">
+                                          Primary Contact
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div className="flex justify-between">
-                                      <span className="font-medium">
-                                        Phone:
-                                      </span>
-                                      <span>
-                                        {primaryContact.contact_number || "N/A"}
-                                      </span>
+
+                                    {/* Contact Details Grid */}
+                                    <div className="grid grid-cols-1 gap-3">
+                                      <div className="flex justify-between border-b pb-2">
+                                        <span className="font-semibold text-muted-foreground">
+                                          Phone:
+                                        </span>
+                                        <span className="font-medium">
+                                          {primaryContact.contact_number ||
+                                            "N/A"}
+                                        </span>
+                                      </div>
+                                      <div className="flex justify-between border-b pb-2">
+                                        <span className="font-semibold text-muted-foreground">
+                                          Email:
+                                        </span>
+                                        <span className="font-medium text-blue-600">
+                                          {primaryContact.email || "N/A"}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div className="flex justify-between">
-                                      <span className="font-medium">
-                                        Email:
-                                      </span>
-                                      <span>
-                                        {primaryContact.email || "N/A"}
-                                      </span>
-                                    </div>
-                                  </>
+                                  </div>
                                 ) : (
-                                  <div>No contact details available</div>
+                                  <div className="text-center py-4 text-muted-foreground">
+                                    No contact details available
+                                  </div>
                                 );
                               })()}
                             </div>
