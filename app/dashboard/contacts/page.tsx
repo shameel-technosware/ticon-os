@@ -35,6 +35,7 @@ export default function ContactsPage() {
 
   // Fetch contacts
   const fetchContacts = async () => {
+    console.log("Fetching contacts...");
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -44,6 +45,7 @@ export default function ContactsPage() {
 
       if (error) throw error;
 
+      console.log("Fetched contacts:", data);
       setContacts(data || []);
       setFilteredContacts(data || []); // Initialize filtered contacts
     } catch (error: any) {
@@ -51,6 +53,7 @@ export default function ContactsPage() {
       toast.error("Failed to fetch contacts");
     } finally {
       setLoading(false);
+      console.log("Finished fetching contacts, loading:", loading);
     }
   };
 
@@ -141,6 +144,7 @@ export default function ContactsPage() {
 
   // Handle save (create or update)
   const handleSave = () => {
+    console.log("handleSave called - refreshing contacts");
     setIsModalOpen(false);
     setEditingContact(null);
     fetchContacts();

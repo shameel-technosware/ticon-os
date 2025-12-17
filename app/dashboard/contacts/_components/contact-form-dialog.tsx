@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,11 +40,31 @@ export default function ContactFormDialog({
   onSave,
 }: ContactFormDialogProps) {
   const [formData, setFormData] = useState({
-    name: contact?.name || "",
-    contact_number: contact?.contact_number || "",
-    email: contact?.email || "",
-    notes: contact?.notes || "",
+    name: "",
+    contact_number: "",
+    email: "",
+    notes: "",
   });
+
+  // Update form data when contact prop changes (for editing)
+  useEffect(() => {
+    if (contact) {
+      setFormData({
+        name: contact.name || "",
+        contact_number: contact.contact_number || "",
+        email: contact.email || "",
+        notes: contact.notes || "",
+      });
+    } else {
+      // Reset form for new contact
+      setFormData({
+        name: "",
+        contact_number: "",
+        email: "",
+        notes: "",
+      });
+    }
+  }, [contact]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
@@ -155,6 +175,13 @@ export default function ContactFormDialog({
       let result;
       if (contact?.id) {
         // Update existing contact
+        console.log("Updating contact with ID:", contact.id, "and data:", {
+          ...formData,
+          contact_number: formData.contact_number.trim(),
+          email: formData.email.trim() || null,
+          notes: formData.notes.trim() || null,
+          updated_at: new Date().toISOString(),
+        });
         result = await supabase
           .from("contacts")
           .update({
@@ -165,8 +192,17 @@ export default function ContactFormDialog({
             updated_at: new Date().toISOString(),
           })
           .eq("id", contact.id);
+
+        console.log("Update result:", result);
       } else {
         // Create new contact
+        console.log("Creating new contact with data:", {
+          ...formData,
+          contact_number: formData.contact_number.trim(),
+          email: formData.email.trim() || null,
+          notes: formData.notes.trim() || null,
+          created_by: user.data.user.id,
+        });
         result = await supabase.from("contacts").insert([
           {
             ...formData,
@@ -176,9 +212,17 @@ export default function ContactFormDialog({
             created_by: user.data.user.id,
           },
         ]);
+        console.log("Insert result:", result);
       }
 
-      if (result.error) throw result.error;
+      if (result.error) {
+        console.error("Supabase error:", result.error);
+        throw result.error;
+      }
+
+      console.log(
+        `${contact?.id ? "Updated" : "Created"} contact successfully`
+      );
 
       toast.success(
         contact?.id
@@ -196,7 +240,8 @@ export default function ContactFormDialog({
     } catch (error: any) {
       console.error("Error saving contact:", error);
       toast.error(
-        contact?.id ? "Failed to update contact" : "Failed to create contact"
+        contact?.id ? "Failed to update contact" : "Failed to create contact",
+        { description: error.message || error.toString() }
       );
     } finally {
       setLoading(false);
