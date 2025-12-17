@@ -175,13 +175,6 @@ export default function ContactFormDialog({
       let result;
       if (contact?.id) {
         // Update existing contact
-        console.log("Updating contact with ID:", contact.id, "and data:", {
-          ...formData,
-          contact_number: formData.contact_number.trim(),
-          email: formData.email.trim() || null,
-          notes: formData.notes.trim() || null,
-          updated_at: new Date().toISOString(),
-        });
         result = await supabase
           .from("contacts")
           .update({
@@ -192,17 +185,8 @@ export default function ContactFormDialog({
             updated_at: new Date().toISOString(),
           })
           .eq("id", contact.id);
-
-        console.log("Update result:", result);
       } else {
         // Create new contact
-        console.log("Creating new contact with data:", {
-          ...formData,
-          contact_number: formData.contact_number.trim(),
-          email: formData.email.trim() || null,
-          notes: formData.notes.trim() || null,
-          created_by: user.data.user.id,
-        });
         result = await supabase.from("contacts").insert([
           {
             ...formData,
@@ -212,17 +196,9 @@ export default function ContactFormDialog({
             created_by: user.data.user.id,
           },
         ]);
-        console.log("Insert result:", result);
       }
 
-      if (result.error) {
-        console.error("Supabase error:", result.error);
-        throw result.error;
-      }
-
-      console.log(
-        `${contact?.id ? "Updated" : "Created"} contact successfully`
-      );
+      if (result.error) throw result.error;
 
       toast.success(
         contact?.id
