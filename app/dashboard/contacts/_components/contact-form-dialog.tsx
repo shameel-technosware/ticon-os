@@ -55,6 +55,16 @@ export default function ContactFormDialog({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    // If this is the contact number field, only allow phone number characters
+    if (name === "contact_number") {
+      // Allow only numbers, +, -, (, ), and space
+      const phoneNumberRegex = /^[0-9+\-\s()]*$/;
+      if (!phoneNumberRegex.test(value)) {
+        return; // Ignore invalid characters
+      }
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user types
@@ -195,7 +205,7 @@ export default function ContactFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="gradient-text">
             {contact?.id ? "Edit Contact" : "Add New Contact"}
