@@ -44,8 +44,11 @@ export function NavDocuments({
       <SidebarGroupLabel>Documents</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
+          // Check if current path is exactly the item URL or a child of it
+          // For dashboard, we want to avoid highlighting when on sub-paths like /dashboard/contacts
           const isActive =
-            pathname === item.url || pathname.startsWith(item.url + "/");
+            pathname === item.url ||
+            (pathname.startsWith(item.url + "/") && item.url !== "/dashboard"); // Special case: don't highlight dashboard for sub-paths
           return (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild isActive={isActive}>
