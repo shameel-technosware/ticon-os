@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus, IconSearch } from "@tabler/icons-react";
 import ContactTable from "./_components/contact-table";
 import ContactFormDialog from "./_components/contact-form-dialog";
 
@@ -20,9 +21,11 @@ interface Contact {
 
 export default function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const supabase = createClient();
 
@@ -38,6 +41,7 @@ export default function ContactsPage() {
       if (error) throw error;
 
       setContacts(data || []);
+      setFilteredContacts(data || []); // Initialize filtered contacts
     } catch (error: any) {
       console.error("Error fetching contacts:", error);
       toast.error("Failed to fetch contacts");
@@ -45,6 +49,28 @@ export default function ContactsPage() {
       setLoading(false);
     }
   };
+
+  // Filter contacts based on search term
+  useEffect(() => {
+    if (contacts.length > 0) {
+      if (searchTerm.trim() === "") {
+        setFilteredContacts(contacts);
+      } else {
+        const filtered = contacts.filter(
+          (contact) =>
+            contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            contact.contact_number
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()) ||
+            (contact.email &&
+              contact.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (contact.notes &&
+              contact.notes.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+        setFilteredContacts(filtered);
+      }
+    }
+  }, [searchTerm, contacts]);
 
   useEffect(() => {
     fetchContacts();
@@ -83,27 +109,45 @@ export default function ContactsPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight gradient-text">
-            Contacts
-          </h1>
-          <p className="text-muted-foreground mt-2">Manage your contact list</p>
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight gradient-text">
+              Contacts
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Manage your contact list
+            </p>
+          </div>
+          <Button
+            onClick={() => {
+              setEditingContact(null);
+              setIsModalOpen(true);
+            }}
+            variant="gradient"
+          >
+            <IconPlus className="mr-2 h-4 w-4" />
+            Add Contact
+          </Button>
         </div>
-        <Button
-          onClick={() => {
-            setEditingContact(null);
-            setIsModalOpen(true);
-          }}
-          variant="gradient"
-        >
-          <IconPlus className="mr-2 h-4 w-4" />
-          Add Contact
-        </Button>
+
+        {/* Search Bar */}
+        <div className="relative max-w-sm">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+            <IconSearch className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <Input
+            type="text"
+            placeholder="Search contacts..."
+            className="pl-10 w-full"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
 
       <ContactTable
-        contacts={contacts}
+        contacts={filteredContacts}
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
