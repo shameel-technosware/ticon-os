@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { IconPlus, IconSearch } from "@tabler/icons-react";
 import ContactTable from "./_components/contact-table";
 import ContactFormDialog from "./_components/contact-form-dialog";
+import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 
 interface Contact {
   id: number;
@@ -30,6 +31,15 @@ export default function ContactsPage() {
     key: "created_at" | "name" | "contact_number";
     direction: "asc" | "desc";
   } | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    contactId: number | null;
+    contactName: string;
+  }>({
+    isOpen: false,
+    contactId: null,
+    contactName: "",
+  });
 
   const supabase = createClient();
 
@@ -121,13 +131,24 @@ export default function ContactsPage() {
     setIsModalOpen(true);
   };
 
+  // Show delete confirmation dialog
+  const showDeleteConfirmation = (id: number, name: string) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      contactId: id,
+      contactName: name,
+    });
+  };
+
   // Delete contact
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this contact?"))
-      return;
+  const handleDeleteConfirmed = async () => {
+    if (deleteConfirmation.contactId === null) return;
 
     try {
-      const { error } = await supabase.from("contacts").delete().eq("id", id);
+      const { error } = await supabase
+        .from("contacts")
+        .delete()
+        .eq("id", deleteConfirmation.contactId);
 
       if (error) throw error;
 
@@ -136,7 +157,23 @@ export default function ContactsPage() {
     } catch (error: any) {
       console.error("Error deleting contact:", error);
       toast.error("Failed to delete contact");
+    } finally {
+      // Close the confirmation dialog
+      setDeleteConfirmation({
+        isOpen: false,
+        contactId: null,
+        contactName: "",
+      });
     }
+  };
+
+  // Cancel delete operation
+  const handleDeleteCancel = () => {
+    setDeleteConfirmation({
+      isOpen: false,
+      contactId: null,
+      contactName: "",
+    });
   };
 
   // Handle save (create or update)
@@ -189,7 +226,7 @@ export default function ContactsPage() {
         contacts={filteredContacts}
         loading={loading}
         onEdit={handleEdit}
-        onDelete={handleDelete}
+        onDelete={showDeleteConfirmation}
         onSort={handleSort}
         sortConfig={sortConfig}
       />
@@ -199,6 +236,16 @@ export default function ContactsPage() {
         onOpenChange={setIsModalOpen}
         contact={editingContact}
         onSave={handleSave}
+      />
+
+      <ConfirmationDialog
+        isOpen={deleteConfirmation.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirmed}
+        title="Delete Contact"
+        description={`Are you sure you want to delete ${deleteConfirmation.contactName}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
       />
     </div>
   );

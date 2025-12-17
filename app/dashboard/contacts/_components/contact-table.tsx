@@ -32,7 +32,7 @@ interface ContactTableProps {
   contacts: Contact[];
   loading: boolean;
   onEdit: (contact: Contact) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: number, name: string) => void;
   onSort?: (key: "created_at" | "name" | "contact_number") => void;
   sortConfig?: {
     key: "created_at" | "name" | "contact_number";
@@ -136,7 +136,7 @@ export default function ContactTable({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => onDelete(contact.id)}
+                      onClick={() => onDelete(contact.id, contact.name)}
                       className="text-destructive hover:text-destructive"
                     >
                       <IconTrash className="h-4 w-4" />

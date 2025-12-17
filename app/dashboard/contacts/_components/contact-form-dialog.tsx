@@ -14,7 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { IconPlus, IconPencil, IconLoader2 } from "@tabler/icons-react";
+import {
+  IconPlus,
+  IconPencil,
+  IconLoader2,
+  IconAlertCircle,
+} from "@tabler/icons-react";
 
 interface Contact {
   id?: number;
@@ -252,7 +257,8 @@ export default function ContactFormDialog({
                 required
               />
               {errors.name && (
-                <div className="col-start-2 col-span-3 text-red-500 text-sm">
+                <div className="col-start-2 col-span-3 text-red-500 text-sm flex items-center">
+                  <IconAlertCircle className="h-4 w-4 mr-1 text-red-500" />
                   {errors.name}
                 </div>
               )}
@@ -271,7 +277,8 @@ export default function ContactFormDialog({
                 required
               />
               {errors.contact_number && (
-                <div className="col-start-2 col-span-3 text-red-50 text-sm">
+                <div className="col-start-2 col-span-3 text-red-500 text-sm flex items-center">
+                  <IconAlertCircle className="h-4 w-4 mr-1 text-red-500" />
                   {errors.contact_number}
                 </div>
               )}
@@ -290,7 +297,8 @@ export default function ContactFormDialog({
                 className="col-span-3"
               />
               {errors.email && (
-                <div className="col-start-2 col-span-3 text-red-50 text-sm">
+                <div className="col-start-2 col-span-3 text-red-500 text-sm flex items-center">
+                  <IconAlertCircle className="h-4 w-4 mr-1 text-red-500" />
                   {errors.email}
                 </div>
               )}
