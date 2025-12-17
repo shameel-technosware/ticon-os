@@ -17,6 +17,16 @@ import {
   IconBriefcase,
   IconLoader2,
 } from "@tabler/icons-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Icons } from "@/components/icons";
+import { useState } from "react";
 
 interface Project {
   id: number;
@@ -194,7 +204,104 @@ export default function ProjectTable({
                       {project.status.replace("_", " ").toUpperCase()}
                     </Badge>
                   </TableCell>
-                  <TableCell>{getPrimaryContact(project)}</TableCell>
+                  <TableCell>
+                    {getPrimaryContact(project)}
+                    {project.project_contacts &&
+                      project.project_contacts.length > 0 && (
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 ml-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
+                            >
+                              <Icons.eye className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Contact Details</DialogTitle>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                              {(() => {
+                                // Find the primary contact using the same logic as getPrimaryContact
+                                let primaryContact = null;
+
+                                if (project.project_contacts) {
+                                  // First, try to find a contact with relationship_type = 'primary'
+                                  const primaryTypeContact =
+                                    project.project_contacts.find(
+                                      (pc) => pc.relationship_type === "primary"
+                                    );
+
+                                  if (
+                                    primaryTypeContact &&
+                                    primaryTypeContact.contacts
+                                  ) {
+                                    primaryContact =
+                                      primaryTypeContact.contacts;
+                                  } else {
+                                    // If no primary type contact, find contact with priority_order = 1
+                                    const priorityOneContact =
+                                      project.project_contacts.find(
+                                        (pc) => pc.priority_order === 1
+                                      );
+
+                                    if (
+                                      priorityOneContact &&
+                                      priorityOneContact.contacts
+                                    ) {
+                                      primaryContact =
+                                        priorityOneContact.contacts;
+                                    } else {
+                                      // If no primary type or priority 1, return the first contact in the list
+                                      const firstContact =
+                                        project.project_contacts[0];
+                                      if (
+                                        firstContact &&
+                                        firstContact.contacts
+                                      ) {
+                                        primaryContact = firstContact.contacts;
+                                      }
+                                    }
+                                  }
+                                }
+
+                                return primaryContact ? (
+                                  <>
+                                    <div className="flex justify-between">
+                                      <span className="font-medium">Name:</span>
+                                      <span>{primaryContact.name}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="font-medium">
+                                        Phone:
+                                      </span>
+                                      <span>
+                                        {primaryContact.contact_number || "N/A"}
+                                      </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="font-medium">
+                                        Email:
+                                      </span>
+                                      <span>
+                                        {primaryContact.email || "N/A"}
+                                      </span>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div>No contact details available</div>
+                                );
+                              })()}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      )}
+                  </TableCell>
                   <TableCell>
                     {new Date(project.created_at).toLocaleDateString()}
                   </TableCell>

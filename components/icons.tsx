@@ -5,6 +5,7 @@ import {
   IconTrash,
   IconUserCircle,
   IconLoader2,
+  IconEye,
 } from "@tabler/icons-react";
 
 export const Icons = {
@@ -13,4 +14,5 @@ export const Icons = {
   delete: (props: IconProps) => <IconTrash {...props} />,
   contact: (props: IconProps) => <IconUserCircle {...props} />,
   spinner: (props: IconProps) => <IconLoader2 {...props} />,
+  eye: (props: IconProps) => <IconEye {...props} />,
 };
