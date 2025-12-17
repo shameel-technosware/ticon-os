@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
+import Link from "next/link";
 import {
   IconDashboard,
   IconDatabase,
@@ -16,12 +17,12 @@ import {
   IconSettings,
   IconShare,
   IconUsers,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
-import { NavDocuments } from "@/components/nav-documents"
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavDocuments } from "@/components/nav-documents";
+import { NavMain } from "@/components/nav-main";
+import { NavSecondary } from "@/components/nav-secondary";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -30,7 +31,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const data = {
   user: {
@@ -41,88 +42,91 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: IconDashboard,
       isActive: true,
     },
     {
       title: "Contacts",
-      url: "#",
+      url: "/dashboard/contacts",
       icon: IconUsers,
     },
     {
       title: "Referrals",
-      url: "#",
+      url: "/dashboard/referrals",
       icon: IconShare,
     },
     {
       title: "Projects",
-      url: "#",
+      url: "/dashboard/projects",
       icon: IconFolder,
     },
     {
       title: "Activities",
-      url: "#",
+      url: "/dashboard/activities",
       icon: IconListDetails,
     },
     {
       title: "Accounts",
-      url: "#",
+      url: "/dashboard/accounts",
       icon: IconUsers,
     },
     {
       title: "Mailbox",
-      url: "#",
+      url: "/dashboard/mailbox",
       icon: IconMail,
     },
     {
       title: "Ticon AI ChatBot",
-      url: "#",
+      url: "/dashboard/chatbot",
       icon: IconRobot,
     },
   ],
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/dashboard/settings",
       icon: IconSettings,
     },
     {
       title: "Get Help",
-      url: "#",
+      url: "/dashboard/help",
       icon: IconHelp,
     },
     {
       title: "Search",
-      url: "#",
+      url: "/dashboard/search",
       icon: IconSearch,
     },
   ],
   documents: [
     {
       name: "Data Library",
-      url: "#",
+      url: "/dashboard/data-library",
       icon: IconDatabase,
     },
     {
       name: "Reports",
-      url: "#",
+      url: "/dashboard/reports",
       icon: IconReport,
     },
     {
       name: "Word Assistant",
-      url: "#",
+      url: "/dashboard/word-assistant",
       icon: IconFileWord,
     },
   ],
-}
+};
 
-export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: any }) {
+export function AppSidebar({
+  user,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { user: any }) {
   const userData = {
     name: user?.user_metadata?.full_name || user?.email || "User",
     email: user?.email || "",
     avatar: user?.user_metadata?.avatar_url || "",
-  }
+  };
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -133,10 +137,10 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link href="/dashboard">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Ticon OS</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -150,5 +154,5 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
         <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
